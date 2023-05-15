@@ -18,7 +18,6 @@ function ViewPacer() {
   const [alunos, setAlunos] = useState([]);
   const [alunoAlvoId, setAlunoAlvoId] = useState();
   const [alunosList, setAlunosList] = useState([]);
-  const [idEquipe, setIdEquipe] = useState();
   const [sprintsList, setSprintsList] = useState([]);
   const [notaP, setNotaP] = useState();
   const [notaA, setNotaA] = useState();
@@ -52,6 +51,7 @@ function ViewPacer() {
 }
 
 const fetchDataNotaPacer = async () => {
+  setPontosPacer(0);
   const result = await Axios.get("http://127.0.0.1:5000/obterValorEquipeSprint", {
                                    params: { idequipe: alunos[0].idEquipe, idsprint: sprintId },
   });
