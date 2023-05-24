@@ -20,6 +20,14 @@ function GestaoSprint() {
   const [idSprint, setIdSprint] = useState(0);
   const [idEquipe, setIdEquipe] = useState(0);
   const [nota, setNota] = useState(0);
+  const [sprints, setSprints] = useState([
+    { value: 1, label: "Sprint 1" },
+    { value: 2, label: "Sprint 2" },
+  ]);
+  const [equipes, setEquipes] = useState([
+    { value: 1, label: "Equipe 1" },
+    { value: 2, label: "Equipe 2" },
+  ]);
 
   const handleVoltarParaHome = () => {
     navigate("/home-prof");
@@ -31,6 +39,8 @@ function GestaoSprint() {
 
   function handleFetchDataSprint() {
     fetchDataSprint();
+    console.log(sprints[0].label);
+    console.log(equipes[0].label);
   }
 
   const fetchCadastrarNotapacer = async () => {
