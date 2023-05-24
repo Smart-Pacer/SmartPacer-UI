@@ -2,6 +2,7 @@ import {
   Button,
   Container,
   Grid,
+  InputLabel,
   MenuItem,
   Paper,
   Select,
@@ -14,127 +15,106 @@ import Axios from "axios";
 
 function GestaoSprint() {
   const navigate = useNavigate();
-  const [equipe, setEquipe] = useState();
-  const [sprint, setSprint] = useState();
-  const [notaPacer, setNotaPacer] = useState(0);
-  const [values, setValues] = useState();
-  const [sprints, setSprints] = useState([]);
-  const [equipes, setEquipes] = useState([]);
-  const [semestre, setSemestre] = useState();
-  const [ano, setAno] = useState();
-  const [sprintsList, setSprintsList] = useState([]);
-
-  // obtem o semestre e ano atual
-  const fetchData = async () => {
-    const currentDate = new Date();
-    const currentYear = currentDate.getFullYear();
-    const currentMonth = currentDate.getMonth() + 1; // adiciona 1 pois os meses são indexados a partir de 0
-    var semestreAtual;
-
-    if (currentMonth >= 1 && currentMonth <= 6) {
-      setSemestre(1);
-    } else {
-      setSemestre(2);
-    }
-
-    setAno(currentYear);
-  };
-
-  //busca no banco todas as equipes
-  const fetchDataEquipe = async () => {
-    Axios.get(`http://127.0.0.1:5000/obterTodasEquipes`).then((response) =>
-      setValues(response.data)
-    );
-  };
-
-  // busca as sprints
-  const fetchDataSprint = async () => {
-    Axios.get("http://127.0.0.1:5000/obterSprintSemestreAno", {
-      params: { semestre: semestre, ano: ano },
-    }).then((response) => {
-      setSprints(response.data);
-    });
-  };
-
-  useEffect(() => {
-    fetchData();
-  }, []);
-
-  // buscar Equipes
-  useEffect(() => {
-    fetchDataEquipe();
-  }, []);
-
-  // buscar sprints
-  useEffect(() => {
-    fetchDataSprint();
-  }, []);
-
-  // carregar Equipes
-  useEffect(() => {
-    if (equipes.length <= 0)
-      for (let i = 0; i < values?.length; i++) {
-        equipes.push({ value: values[i].idequipe, label: values[i].equipe });
-      }
-  }, [values]);
-
-  // carregar Sprints
-  useEffect(() => {
-    for (let i = 0; i < sprints?.length; i++) {
-      sprintsList.push({
-        value: sprints[i].idsprint,
-        label: sprints[i].descricao,
-      });
-    }
-  }, [sprints]);
-
-  const handleChangeSprint = (event) => {
-    setSprint(event.target.value);
-  };
-
-  const handleChangeEquipe = (event) => {
-    setEquipe(event.target.value);
-  };
-
-  const handleChangeNotaPacer = (event) => {
-    setNotaPacer(event.target.value);
-  };
-
-  const handleCadastrarNotaPacer = () => {
-    console.log(equipe, sprint, notaPacer);
-  };
+  const [semestre, setSemestre] = useState(0);
+  const [ano, setAno] = useState(0);
+  const [idSprint, setIdSprint] = useState(0);
+  const [idEquipe, setIdEquipe] = useState(0);
+  const [nota, setNota] = useState(0);
 
   const handleVoltarParaHome = () => {
     navigate("/home-prof");
   };
+
+  const fetchDataSprint = async () => {
+    console.log("Semestre: " + semestre + " Ano: " + ano);
+  };
+
+  function handleFetchDataSprint() {
+    fetchDataSprint();
+  }
+
+  const fetchCadastrarNotapacer = async () => {
+    console.log(
+      "Sprint: " + idSprint + " Equipe: " + idEquipe + " Nota: " + nota
+    );
+  };
+
+  function handleFetchCadastrarNotaPacer() {
+    fetchCadastrarNotapacer();
+  }
 
   return (
     <>
       <Grid container flexDirection="column" alignItems="center">
         <Grid item sx={{ marginTop: 10 }}>
           <Typography variant="h3">Gestão Sprint</Typography>
+
           <Button onClick={handleVoltarParaHome}>Voltar</Button>
           <Paper elelvation={2} sx={{ padding: 5, width: 500 }}>
             <Grid container direction="column" spacing={2}>
               <Grid item>
-                <Grid container direction="column" spacing={4}>
+                <Grid
+                  item
+                  sx={{
+                    display: "grid",
+                    gridTemplateColumns: "repeat(3, 1fr)",
+                  }}
+                >
+                  <TextField
+                    type="text"
+                    label="Semestre"
+                    variant="outlined"
+                    sx={{ width: 150, justifySelf: "right" }}
+                    required
+                    onChange={(e) => setSemestre(e.target.value)}
+                  />
+                  <TextField
+                    type={"text"}
+                    label="Ano"
+                    variant="outlined"
+                    sx={{ width: 150, justifySelf: "center" }}
+                    required
+                    onChange={(e) => setAno(e.target.value)}
+                  />
+                  <Button
+                    variant="contained"
+                    sx={{ width: 150, justifySelf: "left" }}
+                    onClick={handleFetchDataSprint}
+                  >
+                    Pesquisar
+                  </Button>
+                </Grid>
+                <Grid container direction="column" spacing={4} marginTop={2}>
                   <Grid item sx={{ alignSelf: "center", width: 500 }}>
+                    <InputLabel id="sprint-select-label">Sprint</InputLabel>
                     <Select
-                      value={sprint}
-                      onChange={handleChangeSprint}
+                      labelId="sprint-select-label"
+                      placeholder="Sprint"
+                      select
                       fullWidth
-                      name="Sprint"
-                      options={sprintsList}
-                    />
+                      onChange={(e) => setIdSprint(e.target.value)}
+                      value={idSprint}
+                      defaultValue={1}
+                    >
+                      <MenuItem value={1}>Sprint 1</MenuItem>
+                      <MenuItem value={2}>Sprint 2</MenuItem>
+                    </Select>
                   </Grid>
+
                   <Grid item sx={{ alignSelf: "center", width: 500 }}>
+                    <InputLabel id="equipe-select-label">Equipe</InputLabel>
                     <Select
-                      value={equipe}
-                      onChange={handleChangeEquipe}
+                      labelId="equipe-select-label"
+                      select
                       fullWidth
-                      name="Equipe"
-                      options={equipes}
-                    />
+                      placeholder="Equipe"
+                      onChange={(e) => setIdEquipe(e.target.value)}
+                      value={idEquipe}
+                      defaultValue={1}
+                    >
+                      <MenuItem value={1}>Equipe 1</MenuItem>
+                      <MenuItem value={2}>Equipe 2</MenuItem>
+                    </Select>
                   </Grid>
                   <Grid
                     item
@@ -146,15 +126,14 @@ function GestaoSprint() {
                     <TextField
                       type="number"
                       label="Nota Pacer"
-                      onChange={handleChangeNotaPacer}
-                      value={notaPacer}
+                      onChange={(e) => setNota(e.target.value)}
                     />
                   </Grid>
                   <Grid item>
                     <Button
                       fullWidth
                       variant="contained"
-                      onClick={handleCadastrarNotaPacer}
+                      onClick={handleFetchCadastrarNotaPacer}
                     >
                       Cadastrar nota pacer
                     </Button>
