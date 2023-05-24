@@ -13,9 +13,9 @@ import {
   TableHead,
 } from "@mui/material";
 import React, { useState } from "react";
-import Select from 'react-select';
+import Select from "react-select";
 import { useNavigate } from "react-router-dom";
-import Axios from 'axios';
+import Axios from "axios";
 
 function ViewPacer() {
   const navigate = useNavigate();
@@ -27,24 +27,34 @@ function ViewPacer() {
   const [idEquipe, setIdEquipe] = useState();
   const [idSprint, setIdSprint] = useState();
   const [sprintsList, setSprintsList] = useState([]);
-  const [statusEquipe, setStatusEquipe] = useState(Boolean)
-  const [statusSprint, setStatusSprint] = useState(Boolean)
+  const [statusEquipe, setStatusEquipe] = useState(Boolean);
+  const [statusSprint, setStatusSprint] = useState(Boolean);
   const [notasPacer, setNotasPacer] = useState([]);
   const [fetchSprint, setFetchSprint] = useState();
 
   const fetchDataEquipe = async () => {
     setStatusEquipe(false);
     setStatusSprint(false);
-    Axios.get(`http://127.0.0.1:5000/obterTodasEquipes`).then((response) => setValues(response.data))
-  }
+    Axios.get(`http://127.0.0.1:5000/obterTodasEquipes`).then((response) =>
+      setValues(response.data)
+    );
+  };
 
   const fetchDataSprint = async () => {
-    Axios.get('http://127.0.0.1:5000/obterSprintSemestreAno', { params: {"semestre": semestre, "ano": ano}}).then((response) => {setSprints(response.data)});
-  }
+    Axios.get("http://127.0.0.1:5000/obterSprintSemestreAno", {
+      params: { semestre: semestre, ano: ano },
+    }).then((response) => {
+      setSprints(response.data);
+    });
+  };
 
   const fetchDataNotas = async () => {
-    Axios.get('http://127.0.0.1:5000/visualizarNotasEquipeSprint', { params: {"idequipe": idEquipe, "idsprint": idSprint}}).then((response) => {setNotasPacer(response.data)});
-  }
+    Axios.get("http://127.0.0.1:5000/visualizarNotasEquipeSprint", {
+      params: { idequipe: idEquipe, idsprint: idSprint },
+    }).then((response) => {
+      setNotasPacer(response.data);
+    });
+  };
 
   // buscar Equipes
   React.useEffect(() => {
@@ -53,48 +63,46 @@ function ViewPacer() {
 
   // buscar Notas
   React.useEffect(() => {
-    if (idEquipe && idSprint)
-      fetchDataNotas();
+    if (idEquipe && idSprint) fetchDataNotas();
   }, [idEquipe, idSprint]);
 
   // carregarEquipes
   React.useEffect(() => {
-    if(equipes.length <= 0)
-    for (let i = 0; i < values?.length; i++) {
-      equipes.push({value: values[i].idequipe, label: values[i].equipe})
-    }   
+    if (equipes.length <= 0)
+      for (let i = 0; i < values?.length; i++) {
+        equipes.push({ value: values[i].idequipe, label: values[i].equipe });
+      }
   }, [values]);
 
   // carregar Sprints
   React.useEffect(() => {
     for (let i = 0; i < sprints?.length; i++) {
-      sprintsList.push({value: sprints[i].idsprint, label: sprints[i].descricao})
+      sprintsList.push({
+        value: sprints[i].idsprint,
+        label: sprints[i].descricao,
+      });
     }
-    if(sprintsList.length <= 0){
+    if (sprintsList.length <= 0) {
       setStatusSprint(false);
-    }
-    else
-      setStatusSprint(true);
-
+    } else setStatusSprint(true);
   }, [sprints]);
 
-function handleFetchDataSprint() {
-  fetchDataSprint();
-}
+  function handleFetchDataSprint() {
+    fetchDataSprint();
+  }
 
-const handleChange = (event) => {
-  setIdSprint(event.value);
-  setStatusEquipe(true);
-  } 
+  const handleChange = (event) => {
+    setIdSprint(event.value);
+    setStatusEquipe(true);
+  };
 
-const carregarGrid = (event) => {
-  setIdEquipe(event.value);
-}
+  const carregarGrid = (event) => {
+    setIdEquipe(event.value);
+  };
 
-function eventoVoltar(){
-  navigate("/home")
-}
-
+  function eventoVoltar() {
+    navigate("/home-prof");
+  }
 
   return (
     <div>
@@ -107,79 +115,100 @@ function eventoVoltar(){
           style={{ minHeight: "100vh" }}
         >
           <Paper elelvation={2} sx={{ padding: 3 }}>
-            <Typography variant="h4" fontWeight="bold" textAlign="center" sx={{ paddingBottom: 5 }}>
+            <Typography
+              variant="h4"
+              fontWeight="bold"
+              textAlign="center"
+              sx={{ paddingBottom: 5 }}
+            >
               Visualizar Pacer
             </Typography>
             <form>
               <Grid container direction="column" spacing={4}>
-                <Grid item sx={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)'}}>
+                <Grid
+                  item
+                  sx={{
+                    display: "grid",
+                    gridTemplateColumns: "repeat(3, 1fr)",
+                  }}
+                >
                   <TextField
-                    type="text"                 
+                    type="text"
                     label="Semestre"
                     variant="outlined"
-                    sx={{width: 150, justifySelf: "right"}}
+                    sx={{ width: 150, justifySelf: "right" }}
                     required
-                    onChange={event => setSemestre(event.target.value)}
+                    onChange={(event) => setSemestre(event.target.value)}
                   />
                   <TextField
                     type={"text"}
                     label="Ano"
                     variant="outlined"
-                    sx={{width: 150, justifySelf: "center"}}
+                    sx={{ width: 150, justifySelf: "center" }}
                     required
-                    onChange={event => setAno(event.target.value)}
+                    onChange={(event) => setAno(event.target.value)}
                   />
-                  <Button variant="contained" sx={{width: 150, justifySelf: "left"}} onClick={handleFetchDataSprint}>
+                  <Button
+                    variant="contained"
+                    sx={{ width: 150, justifySelf: "left" }}
+                    onClick={handleFetchDataSprint}
+                  >
                     Pesquisar
                   </Button>
                 </Grid>
-                <Grid item sx={{alignSelf:"center", width: 500}}>
-                    <Select
-                    isDisabled = {!statusSprint}
+                <Grid item sx={{ alignSelf: "center", width: 500 }}>
+                  <Select
+                    isDisabled={!statusSprint}
                     label="Sprint"
                     variant="outlined"
                     placeholder="Sprint"
                     required
                     options={sprintsList}
-                    onChange={handleChange}  
-                    />
+                    onChange={handleChange}
+                  />
                 </Grid>
-                <Grid item sx={{alignSelf:"center", width: 500}}>
-                    <Select
-                    isDisabled = {!statusEquipe}
+                <Grid item sx={{ alignSelf: "center", width: 500 }}>
+                  <Select
+                    isDisabled={!statusEquipe}
                     label="Equipe"
                     variant="outlined"
                     placeholder="Equipe"
                     required
                     options={equipes}
-                    onChange={carregarGrid}  
-                    />
+                    onChange={carregarGrid}
+                  />
                 </Grid>
-                <Grid sx={{alignSelf: "center", paddingTop: 8}}>
-                <TableContainer component={Paper}>
-      <Table sx={{ width: 450 }} size="small" aria-label="a dense table">
-        <TableHead>
-          <TableRow>
-            <TableCell>Nome</TableCell>
-            <TableCell >Nota (Média)</TableCell>
-          </TableRow>
-        </TableHead>
-        <TableBody>
-          {/* trocar rows por notasPacer */}
-          {notasPacer.map((row) => (
-            <TableRow
-              key={row.nomeAluno}
-              sx={{ '&:last-child td, &:last-child th': { border: 0 } }}
-            >
-              <TableCell> {row.nomealuno} </TableCell>
-              <TableCell> {row.mediapacer} </TableCell>
-            </TableRow>
-          ))}
-        </TableBody>
-      </Table>
-    </TableContainer>
+                <Grid sx={{ alignSelf: "center", paddingTop: 8 }}>
+                  <TableContainer component={Paper}>
+                    <Table
+                      sx={{ width: 450 }}
+                      size="small"
+                      aria-label="a dense table"
+                    >
+                      <TableHead>
+                        <TableRow>
+                          <TableCell>Nome</TableCell>
+                          <TableCell>Nota (Média)</TableCell>
+                        </TableRow>
+                      </TableHead>
+                      <TableBody>
+                        {/* trocar rows por notasPacer */}
+                        {notasPacer.map((row) => (
+                          <TableRow
+                            key={row.nomeAluno}
+                            sx={{
+                              "&:last-child td, &:last-child th": { border: 0 },
+                            }}
+                          >
+                            <TableCell> {row.nomealuno} </TableCell>
+                            <TableCell> {row.mediapacer} </TableCell>
+                          </TableRow>
+                        ))}
+                      </TableBody>
+                    </Table>
+                  </TableContainer>
                 </Grid>
-                <Grid item sx={{alignSelf:"center"}}>
+                <Grid item sx={{ alignSelf: "center" }}>
                   <Button variant="contained" onClick={eventoVoltar}>
                     Voltar
                   </Button>

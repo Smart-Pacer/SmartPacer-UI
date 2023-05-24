@@ -1,6 +1,7 @@
 import {
   Button,
   Container,
+  FormControl,
   Grid,
   InputLabel,
   MenuItem,
@@ -20,27 +21,18 @@ function GestaoSprint() {
   const [idSprint, setIdSprint] = useState(0);
   const [idEquipe, setIdEquipe] = useState(0);
   const [nota, setNota] = useState(0);
-  const [sprints, setSprints] = useState([
-    { value: 1, label: "Sprint 1" },
-    { value: 2, label: "Sprint 2" },
-  ]);
-  const [equipes, setEquipes] = useState([
-    { value: 1, label: "Equipe 1" },
-    { value: 2, label: "Equipe 2" },
-  ]);
+  const [sprints, setSprints] = useState([]);
+  const [equipes, setEquipes] = useState([]);
+  const [equipesList, setEquipesList] = useState([]);
+  const [sprintsList, setSprintsList] = useState([]);
 
   const handleVoltarParaHome = () => {
     navigate("/home-prof");
   };
 
-  const fetchDataSprint = async () => {
-    console.log("Semestre: " + semestre + " Ano: " + ano);
-  };
-
   function handleFetchDataSprint() {
-    fetchDataSprint();
-    console.log(sprints[0].label);
-    console.log(equipes[0].label);
+    obterTodasAsEquipes();
+    obterTodasAsSprints();
   }
 
   const fetchCadastrarNotapacer = async () => {
@@ -52,6 +44,44 @@ function GestaoSprint() {
   function handleFetchCadastrarNotaPacer() {
     fetchCadastrarNotapacer();
   }
+
+  // obter todas as equipes no banco de dados
+  const obterTodasAsEquipes = async () => {
+    await Axios.get(`http://127.0.0.1:5000/obterTodasEquipes`).then(
+      (response) => setEquipesList(response.data)
+    );
+    console.log(equipesList[0]);
+    if (equipes.length <= 0) {
+      for (let i = 0; i < equipesList?.length; i++) {
+        equipes.push({
+          value: equipesList[i].idequipe,
+          label: equipesList[i].equipe,
+        });
+      }
+    } else {
+      console.log(equipes);
+    }
+  };
+
+  // obter todas as sprints
+  const obterTodasAsSprints = async () => {
+    await Axios.get("http://127.0.0.1:5000/obterSprintSemestreAno", {
+      params: { semestre: semestre, ano: ano },
+    }).then((response) => {
+      setSprintsList(response.data);
+    });
+    console.log(sprintsList[0]);
+    if (sprints.length <= 0) {
+      for (let i = 0; i < sprintsList?.length; i++) {
+        sprints.push({
+          value: sprintsList[i].idsprint,
+          label: sprintsList[i].descricao,
+        });
+      }
+    } else {
+      console.log(sprints);
+    }
+  };
 
   return (
     <>
@@ -94,6 +124,7 @@ function GestaoSprint() {
                     Pesquisar
                   </Button>
                 </Grid>
+
                 <Grid container direction="column" spacing={4} marginTop={2}>
                   <Grid item sx={{ alignSelf: "center", width: 500 }}>
                     <InputLabel id="sprint-select-label">Sprint</InputLabel>
@@ -106,8 +137,11 @@ function GestaoSprint() {
                       value={idSprint}
                       defaultValue={1}
                     >
-                      <MenuItem value={1}>Sprint 1</MenuItem>
-                      <MenuItem value={2}>Sprint 2</MenuItem>
+                      {sprints.map((sprint) => (
+                        <MenuItem key={sprint.id} value={sprint.value}>
+                          {sprint.label}
+                        </MenuItem>
+                      ))}
                     </Select>
                   </Grid>
 
@@ -122,8 +156,11 @@ function GestaoSprint() {
                       value={idEquipe}
                       defaultValue={1}
                     >
-                      <MenuItem value={1}>Equipe 1</MenuItem>
-                      <MenuItem value={2}>Equipe 2</MenuItem>
+                      {equipes.map((equipe) => (
+                        <MenuItem key={equipe.id} value={equipe.value}>
+                          {equipe.label}
+                        </MenuItem>
+                      ))}
                     </Select>
                   </Grid>
                   <Grid
