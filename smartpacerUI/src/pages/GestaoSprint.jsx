@@ -36,6 +36,13 @@ function GestaoSprint() {
   }
 
   const fetchCadastrarNotapacer = async () => {
+    await Axios.post(`http://127.0.0.1:5000/cadastrarNotaSprint`, {
+      idEquipe,
+      idSprint,
+      nota,
+    }).then((response) => {
+      console.log(response);
+    });
     console.log(
       "Sprint: " + idSprint + " Equipe: " + idEquipe + " Nota: " + nota
     );
@@ -47,8 +54,8 @@ function GestaoSprint() {
 
   // obter todas as equipes no banco de dados
   const obterTodasAsEquipes = async () => {
-    await Axios.get(`http://127.0.0.1:5000/obterTodasEquipes`).then(
-      (response) => setEquipesList(response.data)
+    Axios.get(`http://127.0.0.1:5000/obterTodasEquipes`).then((response) =>
+      setEquipesList(response.data)
     );
     console.log(equipesList[0]);
     if (equipes.length <= 0) {
@@ -65,7 +72,7 @@ function GestaoSprint() {
 
   // obter todas as sprints
   const obterTodasAsSprints = async () => {
-    await Axios.get("http://127.0.0.1:5000/obterSprintSemestreAno", {
+    Axios.get("http://127.0.0.1:5000/obterSprintSemestreAno", {
       params: { semestre: semestre, ano: ano },
     }).then((response) => {
       setSprintsList(response.data);
